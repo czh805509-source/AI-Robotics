@@ -8,14 +8,6 @@
 实现机器人在 PyBullet 仿真环境中的稳定向前小跑（Trot Gait）。
 
 ---
-
-## 使用工具
-
-- ChatGPT
-- Python 3.10
-- PyBullet
-- NumPy
-
 ---
 
 ## 遇到的问题
