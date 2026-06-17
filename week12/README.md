@@ -88,21 +88,23 @@ corners, ids, rejected = detector.detectMarkers(frame)
 五、实验结果
 1. 手机视频流进入 WSL
 
-（插入截图）
+
 
 
 
 
 2. ArUco 实时识别
 
-（插入截图）
+
 
 
 
 
 3. Marker ID 显示
 
-（插入截图）
+<img width="1672" height="941" alt="6 18 4" src="https://github.com/user-attachments/assets/5474eb42-00e8-46e7-aba0-1e3a49c48a62" />
+
+
 
 
 
