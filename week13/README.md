@@ -73,3 +73,22 @@ RF + LR
 pip install -r requirements.txt
 
 python examples/quadruped_walk_fixed.py
+STEP_LENGTH = 0.05
+STEP_HEIGHT = 0.03
+FREQ = 2.0
+
+def foot_trajectory(t, phase):
+    x = STEP_LENGTH * np.sin(FREQ * t + phase)
+
+    z = STEP_HEIGHT * max(
+        0,
+        np.sin(FREQ * t + phase)
+    )
+
+    return x, z
+    PHASES = [
+    0,
+    np.pi,
+    np.pi,
+    0
+]
