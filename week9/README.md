@@ -850,3 +850,232 @@ so(3)向量
 非线性优化
 视觉SLAM
 BA优化
+
+
+pip install numpy matplotlib opencv-python
+python robotics_homework.py
+import numpy as np
+import matplotlib.pyplot as plt
+import cv2
+
+# =====================================
+# 1. 线性代数练习
+# =====================================
+
+def Rx(theta):
+    return np.array([
+        [1, 0, 0],
+        [0, np.cos(theta), -np.sin(theta)],
+        [0, np.sin(theta), np.cos(theta)]
+    ])
+
+def Ry(theta):
+    return np.array([
+        [np.cos(theta), 0, np.sin(theta)],
+        [0, 1, 0],
+        [-np.sin(theta), 0, np.cos(theta)]
+    ])
+
+def Rz(theta):
+    return np.array([
+        [np.cos(theta), -np.sin(theta), 0],
+        [np.sin(theta), np.cos(theta), 0],
+        [0, 0, 1]
+    ])
+
+theta = np.deg2rad(30)
+
+R = Rz(theta)
+
+print("R =")
+print(R)
+
+print("\nR * R^T =")
+print(R @ R.T)
+
+print("\n是否接近单位矩阵:")
+print(np.allclose(R @ R.T, np.eye(3)))
+
+print("\n组合旋转:")
+
+R1 = Rz(np.deg2rad(30))
+R2 = Ry(np.deg2rad(45))
+
+R_combined = R2 @ R1
+
+print(R_combined)
+
+# =====================================
+# 2. 三自由度机械臂
+# =====================================
+
+L1 = 2
+L2 = 2
+L3 = 1
+
+def forward_kinematics(t1, t2, t3):
+
+    x = (
+        L1*np.cos(t1)
+        + L2*np.cos(t1+t2)
+        + L3*np.cos(t1+t2+t3)
+    )
+
+    y = (
+        L1*np.sin(t1)
+        + L2*np.sin(t1+t2)
+        + L3*np.sin(t1+t2+t3)
+    )
+
+    return x, y
+
+print("\n正运动学测试")
+
+x, y = forward_kinematics(
+    np.deg2rad(30),
+    np.deg2rad(45),
+    np.deg2rad(20)
+)
+
+print("末端位置:")
+print(x, y)
+
+# =====================================
+# 逆运动学
+# =====================================
+
+def inverse_kinematics(x, y, phi):
+
+    xw = x - L3*np.cos(phi)
+    yw = y - L3*np.sin(phi)
+
+    D = (
+        xw**2 + yw**2
+        - L1**2 - L2**2
+    ) / (2*L1*L2)
+
+    if abs(D) > 1:
+        return None
+
+    t2 = np.arctan2(
+        np.sqrt(1-D**2),
+        D
+    )
+
+    t1 = np.arctan2(yw, xw) - np.arctan2(
+        L2*np.sin(t2),
+        L1 + L2*np.cos(t2)
+    )
+
+    t3 = phi - t1 - t2
+
+    return t1, t2, t3
+
+print("\n逆运动学测试")
+
+angles = inverse_kinematics(
+    3.0,
+    2.0,
+    np.deg2rad(45)
+)
+
+print(angles)
+
+# =====================================
+# 工作空间绘制
+# =====================================
+
+xs = []
+ys = []
+
+for t1 in np.linspace(-np.pi, np.pi, 80):
+    for t2 in np.linspace(-np.pi, np.pi, 80):
+        for t3 in np.linspace(-np.pi, np.pi, 20):
+
+            x, y = forward_kinematics(
+                t1, t2, t3
+            )
+
+            xs.append(x)
+            ys.append(y)
+
+plt.figure(figsize=(6,6))
+plt.scatter(xs, ys, s=1)
+plt.title("3DOF Workspace")
+plt.axis("equal")
+plt.show()
+
+# =====================================
+# 3. 卷积练习
+# =====================================
+
+img = np.zeros((200,200), dtype=np.uint8)
+
+cv2.rectangle(
+    img,
+    (50,50),
+    (150,150),
+    255,
+    -1
+)
+
+kernel = np.array([
+    [-1,0,1],
+    [-2,0,2],
+    [-1,0,1]
+])
+
+def manual_conv(image, kernel):
+
+    h, w = image.shape
+
+    output = np.zeros_like(image)
+
+    for i in range(1,h-1):
+        for j in range(1,w-1):
+
+            region = image[
+                i-1:i+2,
+                j-1:j+2
+            ]
+
+            value = np.sum(
+                region * kernel
+            )
+
+            output[i,j] = np.clip(
+                abs(value),
+                0,
+                255
+            )
+
+    return output
+
+manual_result = manual_conv(
+    img,
+    kernel
+)
+
+opencv_result = cv2.filter2D(
+    img,
+    -1,
+    kernel
+)
+
+plt.figure(figsize=(12,4))
+
+plt.subplot(131)
+plt.imshow(img, cmap='gray')
+plt.title("Original")
+
+plt.subplot(132)
+plt.imshow(manual_result, cmap='gray')
+plt.title("Manual Conv")
+
+plt.subplot(133)
+plt.imshow(opencv_result, cmap='gray')
+plt.title("OpenCV Conv")
+
+plt.show()
+
+print("\n卷积实验完成")
