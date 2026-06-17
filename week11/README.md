@@ -53,3 +53,7 @@ https://用户名.github.io/仓库名/
 README 自动展示
 图片在线访问
 Markdown 页面浏览
+
+本周学习成果
+
+本周完成了 Docker 镜像管理、PyBullet 与 OpenCV 环境配置、GitHub Pages 网页部署以及轮式机器人基础知识学习。能够独立完成环境搭建、图像处理实验和作业网页发布，为后续 ROS2 机器人开发与仿真实验奠定了基础。
