@@ -252,3 +252,18 @@ docker ps
 docker stop 容器ID
 
 docker exec -it 容器ID bash
+
+
+img = cv2.imread('cat.jpg', cv2.IMREAD_COLOR)
+
+plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+plt.title("Original Color Image")
+plt.axis("off")
+plt.show()
+
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+plt.imshow(gray, cmap='gray')
+plt.title("Grayscale Image")
+plt.axis("off")
+plt.show()
